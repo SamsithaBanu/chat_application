@@ -11,15 +11,22 @@ import {
   InputAdornment,
   Button,
   Typography,
-  CircularProgress
+  CircularProgress,
+  useMediaQuery
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Mail, Lock, MessageSquare } from "lucide-react";
+import { useDimensions } from "../lib/utils";
+import { useTheme } from "@mui/material/styles";
 
 const Signin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const { login, isLoggingIn } = useAuthStore();
+  const { width } = useDimensions();
+  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,21 +34,16 @@ const Signin = () => {
   };
 
   return (
-    <Grid
-      container
-      component="main"
-      lg={{ width: "1200px" }}
-      sx={{ height: "100vh" }}
-    >
+    <Grid container component="main" sx={{ height: "100vh" }}>
       {/* Left Side - Form */}
       <Grid
         item
         xs={12}
         md={6}
         display="flex"
-        paddingLeft={"180px"}
         alignItems="center"
         justifyContent="center"
+        sx={{ px: isMobile ? 2 : 8 }} // Responsive padding
       >
         <Container maxWidth="sm">
           <Box textAlign="center" mb={4}>
@@ -61,13 +63,7 @@ const Signin = () => {
               Welcome Back
             </Typography>
 
-            <Typography
-              variant="body2"
-              fontSize="1rem"
-              letterSpacing="0.03rem"
-              paddingTop={"6px"}
-              color="text.secondary"
-            >
+            <Typography variant="body2" color="text.secondary" mt={1}>
               Sign in to your account
             </Typography>
           </Box>
@@ -87,11 +83,11 @@ const Signin = () => {
                 )
               }}
               sx={{
-                "& label.Mui-focused": { color: "#2C3930" }, // Label color when focused
+                "& label.Mui-focused": { color: "#2C3930" },
                 "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#2C3930" }, // Default border color
-                  "&:hover fieldset": { borderColor: "#2C3930" }, // Hover effect
-                  "&.Mui-focused fieldset": { borderColor: "#2C3930" } // Focused border color
+                  "& fieldset": { borderColor: "#2C3930" },
+                  "&:hover fieldset": { borderColor: "#2C3930" },
+                  "&.Mui-focused fieldset": { borderColor: "#2C3930" }
                 }
               }}
               value={formData.email}
@@ -124,11 +120,11 @@ const Signin = () => {
                 )
               }}
               sx={{
-                "& label.Mui-focused": { color: "#2C3930" }, // Label color when focused
+                "& label.Mui-focused": { color: "#2C3930" },
                 "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#2C3930" }, // Default border color
-                  "&:hover fieldset": { borderColor: "#2C3930" }, // Hover effect
-                  "&.Mui-focused fieldset": { borderColor: "#2C3930" } // Focused border color
+                  "& fieldset": { borderColor: "#2C3930" },
+                  "&:hover fieldset": { borderColor: "#2C3930" },
+                  "&.Mui-focused fieldset": { borderColor: "#2C3930" }
                 }
               }}
               value={formData.password}
@@ -139,17 +135,16 @@ const Signin = () => {
 
             <Button
               type="submit"
-              variant="#2C3930"
-              color=""
               fullWidth
-              sx={{ mt: 2 }}
-              disabled={isLoggingIn}
-              style={{
+              sx={{
+                mt: 2,
                 background: "#2C3930",
                 height: "50px",
                 borderRadius: "5px",
-                color: "white"
+                color: "white",
+                "&:hover": { background: "#1E2820" }
               }}
+              disabled={isLoggingIn}
             >
               {isLoggingIn ? (
                 <CircularProgress size={24} color="inherit" />
@@ -159,39 +154,34 @@ const Signin = () => {
             </Button>
           </form>
 
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            textAlign="center"
-            mt={2}
-          >
+          <Typography variant="body2" color="text.secondary" textAlign="center" mt={2}>
             Don&apos;t have an account?{" "}
-            <Link
-              to="/signup"
-              style={{ color: "#0A5EB0", textDecoration: "none" }}
-            >
+            <Link to="/signup" style={{ color: "#0A5EB0", textDecoration: "none" }}>
               Create account
             </Link>
           </Typography>
         </Container>
       </Grid>
 
-      {/* Right Side - Image/Pattern */}
-      <Grid
-        item
-        xs={12}
-        md={6}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <AuthImagePattern
-          title={"Welcome back!"}
-          subtitle={
-            "Sign in to continue your conversations and catch up with your messages."
-          }
-        />
-      </Grid>
+      {/* Right Side - Image/Pattern (Hidden on Small Screens) */}
+      {!isMobile && width > 1020 && (
+        <Grid
+          item
+          xs={12}
+          md={6}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          sx={{
+            backgroundColor: "#F5F5F5", // Soft background color for contrast
+          }}
+        >
+          <AuthImagePattern
+            title="Welcome back!"
+            subtitle="Sign in to continue your conversations and catch up with your messages."
+          />
+        </Grid>
+      )}
     </Grid>
   );
 };

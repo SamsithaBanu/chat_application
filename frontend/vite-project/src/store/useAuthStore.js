@@ -1,7 +1,7 @@
-import toast from "react-hot-toast";
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import { io } from "socket.io-client";
+import { toast } from "react-toastify";
 
 const BASE_URL =  import.meta.env.MODE === 'development' ? "http://localhost:5001" : "/";
 
@@ -38,7 +38,7 @@ export const useAuthStore = create((set, get)=>({
           get().connectSocket();
         } catch (error) {
             console.log(error)
-          toast.error(error.response.data.message);
+            toast.error(error.response.data.message);
         } finally {
           set({ isSigningUp: false });
         }
@@ -48,10 +48,11 @@ export const useAuthStore = create((set, get)=>({
         try{
             const res = await axiosInstance.post('/auth/login', data);
             set({authUser: res.data});
+            console.log('toast', toast.success)
             toast.success("Logged in Successfully");
             get().connectSocket();
         }catch(error){
-            toast.error(error.response.data.message)
+          toast.error(error.response.data.message)
         }finally{
             set({isLoggingIn: false})
         }
@@ -63,7 +64,7 @@ export const useAuthStore = create((set, get)=>({
             toast.success("Logout in Successfully");
             get().disconnectSocket();
         }catch(error){
-            toast.error(error.response.data.message)
+          toast.error(error.response.data.message)
         }
     },
     updateProfile: async (data) => {

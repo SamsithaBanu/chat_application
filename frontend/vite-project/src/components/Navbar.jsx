@@ -1,18 +1,26 @@
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
-import { LogOut, Settings, User } from "lucide-react";
+import { LogOut, Settings, User, Menu } from "lucide-react";
 import {
   AppBar,
   Toolbar,
   IconButton,
   Typography,
   Box,
-  Container,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  useMediaQuery,
 } from "@mui/material";
 import MessageIcon from "@mui/icons-material/Message";
+import { useState } from "react";
 
 export const Navbar = () => {
   const { logout, authUser } = useAuthStore();
+  const isMobile = useMediaQuery("(max-width: 600px)");
+  const [openDrawer, setOpenDrawer] = useState(false);
 
   return (
     <AppBar
@@ -22,32 +30,39 @@ export const Navbar = () => {
         borderBottom: 1,
         borderColor: "divider",
         boxShadow: 2,
-        margin: "0 auto", // Center the AppBar
       }}
     >
-      {/* Container with expanded width */}
-      <div
-      style={{padding:'0 60px'}}
-
+      <Toolbar
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          padding: isMobile ? "0 16px" : "0 60px",
+        }}
       >
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          {/* Left Side - Logo */}
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            gap={1.5}
-            component={Link}
-            to="/"
-            sx={{ textDecoration: "none", color: "inherit" }}
-          >
-            <MessageIcon size={27} />
+        {/* Left Side - Logo */}
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={1.5}
+          component={Link}
+          to="/"
+          sx={{ textDecoration: "none", color: "inherit" }}
+        >
+          <MessageIcon />
+          {!isMobile && (
             <Typography variant="h5" fontWeight="bold">
               Chatty
             </Typography>
-          </Box>
+          )}
+        </Box>
 
-          {/* Right Side - Buttons */}
+        {/* Mobile Menu Button */}
+        {isMobile ? (
+          <IconButton onClick={() => setOpenDrawer(true)}>
+            <Menu color="#DCD7C9" />
+          </IconButton>
+        ) : (
+          // Desktop Menu
           <Box display="flex" alignItems="center" gap={2}>
             <Box
               display="flex"
@@ -56,8 +71,8 @@ export const Navbar = () => {
               to="/settings"
               sx={{ textDecoration: "none", color: "inherit" }}
             >
-              <IconButton component={Link} color="#DCD7C9">
-                <Settings size={24} color="#DCD7C9" />
+              <IconButton>
+                <Settings color="#DCD7C9" />
               </IconButton>
               <Typography fontWeight="400">Settings</Typography>
             </Box>
@@ -71,28 +86,57 @@ export const Navbar = () => {
                   to="/profile"
                   sx={{ textDecoration: "none", color: "inherit" }}
                 >
-                  <IconButton component={Link} color="#DCD7C9">
-                    <User size={24} color="#DCD7C9" />
+                  <IconButton>
+                    <User color="#DCD7C9" />
                   </IconButton>
                   <Typography fontWeight="400">Profile</Typography>
                 </Box>
                 <Box
                   display="flex"
                   alignItems="center"
-                  component={Link}
                   onClick={logout}
-                  sx={{ textDecoration: "none", color: "inherit" }}
+                  sx={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}
                 >
-                  <IconButton component={Link} color="#DCD7C9">
-                    <LogOut size={24} color="#DCD7C9" />
+                  <IconButton>
+                    <LogOut color="#DCD7C9" />
                   </IconButton>
                   <Typography fontWeight="400">Logout</Typography>
                 </Box>
               </>
             )}
           </Box>
-        </Toolbar>
-      </div>
+        )}
+      </Toolbar>
+
+      {/* Mobile Drawer */}
+      <Drawer anchor="right" open={openDrawer} onClose={() => setOpenDrawer(false)}>
+        <List sx={{ width: 250 }}>
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/settings">
+              <Settings />
+              <ListItemText primary="Settings" sx={{ marginLeft: 1 }} />
+            </ListItemButton>
+          </ListItem>
+
+          {authUser && (
+            <>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} to="/profile">
+                  <User />
+                  <ListItemText primary="Profile" sx={{ marginLeft: 1 }} />
+                </ListItemButton>
+              </ListItem>
+
+              <ListItem disablePadding>
+                <ListItemButton onClick={logout}>
+                  <LogOut />
+                  <ListItemText primary="Logout" sx={{ marginLeft: 1 }} />
+                </ListItemButton>
+              </ListItem>
+            </>
+          )}
+        </List>
+      </Drawer>
     </AppBar>
   );
 };
